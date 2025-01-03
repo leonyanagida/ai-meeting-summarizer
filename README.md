@@ -2,11 +2,11 @@
 
 A modern web application that uses AI to transform lengthy meeting notes into concise, structured summaries. Built with Next.js, TypeScript, and Hugging Face's AI models.
 
-## 🚀 Demo
+## 🚀 Live Demo
 
 Try it out: [AI Meeting Summarizer](https://ai-meeting-summarizer.vercel.app)
 
-## 🚀 Getting Started
+## 💻 Getting Started
 
 1. Clone the repository
 ```bash
