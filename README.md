@@ -6,6 +6,31 @@ A modern web application that uses AI to transform lengthy meeting notes into co
 
 Try it out: [AI Meeting Summarizer](https://ai-meeting-summarizer.vercel.app)
 
+## 🚀 Getting Started
+
+1. Clone the repository
+```bash
+git clone https://github.com/leonyanagida/ai-meeting-summarizer.git
+```
+
+2. Install dependencies
+```bash
+npm install
+```
+
+3. Set up environment variables
+```bash
+cp .env.example .env.local
+```
+Then edit `.env.local` and add your Hugging Face API key
+
+4. Run the development server
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) to view the app
+
 ## ✨ Features
 
 - **Instant Summaries**: Convert lengthy meeting transcripts into clear, actionable summaries
