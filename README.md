@@ -4,7 +4,7 @@ A modern web application that uses AI to transform lengthy meeting notes into co
 
 ## 🚀 Live Demo
 
-Try it out: [AI Meeting Summarizer](https://ai-meeting-summarizer-qdrvx5t1r-leons-projects-b99151cd.vercel.app)
+Try it out: [AI Meeting Summarizer](https://ai-meeting-summarizer-liard.vercel.app)
 
 ## 💻 Getting Started
 
