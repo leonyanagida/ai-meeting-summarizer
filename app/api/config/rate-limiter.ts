@@ -10,8 +10,8 @@ interface RateLimit {
 }
 
 const redis = new Redis({
-  url: process.env.REDIS_URL!,
-  token: process.env.REDIS_TOKEN!
+  url: process.env.STORAGE_KV_REST_API_URL!,
+  token: process.env.STORAGE_KV_REST_API_TOKEN!
 });
 
 const HOUR_IN_MS = 60 * 60 * 1000;

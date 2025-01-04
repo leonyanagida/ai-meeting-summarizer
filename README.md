@@ -44,6 +44,7 @@ Then edit `.env.local` and add:
    - Click "Storage"
    - Select "Connect Store" -> "Upstash Redis"
    - Follow the prompts to create/connect your database
+   - Vercel will automatically add STORAGE_KV_REST_API_URL and STORAGE_KV_REST_API_TOKEN
 
 5. Run the development server
 
