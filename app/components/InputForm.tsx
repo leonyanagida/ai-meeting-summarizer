@@ -47,7 +47,7 @@ export default function InputForm() {
       if (!res.ok) {
         switch (res.status) {
           case 429:
-            throw new Error(`You've reached the hourly limit.Please try again in an hour.`);
+            throw new Error(`You've reached the hourly limit. Please try again in an hour.`);
           case 400:
             throw new Error(data.error || 'Please check your meeting notes and try again.');
           case 500:
