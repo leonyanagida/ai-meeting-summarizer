@@ -45,14 +45,26 @@ export default function InputForm() {
 
       const data = await res.json();
       if (!res.ok) {
-        if (res.status === 429) {
-          throw new Error('You have reached the hourly limit. Please try again later.');
+        switch (res.status) {
+          case 429:
+            throw new Error(`You've reached the hourly limit.Please try again in an hour.`);
+          case 400:
+            throw new Error(data.error || 'Please check your meeting notes and try again.');
+          case 500:
+            throw new Error('Our AI service is temporarily unavailable. Please try again in a few minutes.');
+          default:
+            throw new Error('Something went wrong. Please try again later.');
         }
-        throw new Error(data.error);
       }
       setSummary(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to summarize text');
+      if (err instanceof Error) {
+        setError(err.message);
+      } else if (!navigator.onLine) {
+        setError('Please check your internet connection and try again.');
+      } else {
+        setError('Unable to generate summary. Please try again in a few minutes.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -110,7 +122,10 @@ export default function InputForm() {
 
                 {error && (
                   <div className="rounded-md bg-red-50 p-4">
-                    <div className="flex">
+                    <div className="flex items-center">
+                      <svg className="h-5 w-5 text-red-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      </svg>
                       <div className="text-sm text-red-700">{error}</div>
                     </div>
                   </div>
