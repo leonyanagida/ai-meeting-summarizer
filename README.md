@@ -59,7 +59,9 @@ Open [http://localhost:3000](http://localhost:3000) to view the app
 - **Instant Summaries**: Convert lengthy meeting transcripts into clear, actionable summaries
 - **Key Information Extraction**: Automatically identifies meeting dates and participants
 - **Modern UI/UX**: Clean, responsive interface with real-time feedback
-- **Smart Rate Limiting**: Redis-powered rate limiting with Upstash
+- **Robust Rate Limiting**: Redis-powered rate limiting with fallback mechanisms
+- **Timeout Handling**: Graceful handling of API timeouts with user feedback
+- **Performance Optimization**: Minimum response time for better UX
 - **Example Templates**: Built-in meeting note templates for easy testing
 - **Security Features**: Spam detection and content validation
 
@@ -69,7 +71,7 @@ Open [http://localhost:3000](http://localhost:3000) to view the app
 - [TypeScript](https://www.typescriptlang.org/) - Type safety
 - [Tailwind CSS](https://tailwindcss.com/) - Styling
 - [Hugging Face](https://huggingface.co/) - AI model integration
-- [Upstash Redis](https://upstash.com/) - Serverless Redis for rate limiting
+- [Upstash Redis](https://upstash.com/) - Serverless Redis with automatic failover
 - [Vercel](https://vercel.com) - Deployment
 
 ## 🎯 Project Purpose
@@ -78,24 +80,28 @@ This project was built in a few hours to demonstrate my ability to:
 
 - Integrate AI tools into modern web applications
 - Build clean, user-friendly interfaces
-- Implement serverless-friendly rate limiting with Redis
+- Handle edge cases and API timeouts gracefully
+- Implement resilient serverless architecture
 - Write maintainable, type-safe code
 - Create responsive and accessible designs
 
 ## 🔒 Security Features
 
 - Rate limiting (hourly and daily limits)
-- Redis-powered request tracking
+- Redis-powered request tracking with failover
 - Content validation
 - Spam detection
 - Input sanitization
 - Maximum content length restrictions
+- Timeout protection
 
 ## 🚦 Rate Limits
 
 - 5 requests per hour
 - 50 requests per day
 - 50-2000 characters per request
+- 30-second timeout protection
+- 3-second minimum response time
 
 ## 🧑‍💻 Author
 

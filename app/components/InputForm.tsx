@@ -50,6 +50,8 @@ export default function InputForm() {
             throw new Error(`You've reached the hourly limit. Please try again in an hour.`);
           case 400:
             throw new Error(data.error || 'Please check your meeting notes and try again.');
+          case 504:
+            throw new Error('The request timed out. Please try again - it should be faster on subsequent attempts.');
           case 500:
             throw new Error('Our AI service is temporarily unavailable. Please try again in a few minutes.');
           default:

@@ -2,10 +2,15 @@ import { HfInference } from '@huggingface/inference';
 import { rateLimit } from '../config/rate-limiter';
 
 const hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
-const MIN_RESPONSE_TIME = 5000;
+
+export const maxDuration = 30; // Extend Vercel's function timeout to 30 seconds
+export const dynamic = 'force-dynamic'; // Disable static optimization
+
+const MIN_RESPONSE_TIME = 3000; // 3 seconds minimum delay
 
 export async function POST(request: Request) {
   try {
+    const startTime = Date.now();
     const { notes } = await request.json();
 
     // Apply rate limiting with content validation
@@ -20,68 +25,26 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check for potential spam patterns
-    const spamPatterns = [
-      // Common spam keywords
-      /\b(viagra|casino|lottery|prize|crypto|bitcoin|forex|porn|xxx|sex|dating)\b/i,
+    // Generate the summary with a timeout
+    const result = await Promise.race([
+      hf.summarization({
+        model: 'philschmid/bart-large-cnn-samsum',
+        inputs: notes,
+        parameters: {
+          max_length: 250,
+          min_length: 100,
+          temperature: 0.7,
+        },
+      }),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('API timeout')), 25000)
+      ),
+    ]) as { summary_text: string };
 
-      // URLs and links
-      /\b(http|https|www\.)\S+/i,
-
-      // Repeated characters (e.g., "aaaaa")
-      /(.)\1{4,}/,
-
-      // Excessive capitalization
-      /[A-Z]{5,}/,
-
-      // Common spam phrases
-      /\b(make money|get rich|earn fast|free offer|winner|you won|congratulation|\\$\\$\\$)\b/i,
-
-      // Email addresses
-      /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/,
-
-      // Phone numbers
-      /\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/,
-
-      // Excessive punctuation
-      /[!?]{3,}|[.]{4,}/,
-
-      // Cryptocurrency wallet addresses
-      /\b(0x[a-fA-F0-9]{40}|bc1[a-zA-Z0-9]{25,39})\b/,
-
-      // Non-meeting related promotional content
-      /\b(discount|sale|offer|limited time|buy now|click here|subscribe|sign up today)\b/i
-    ];
-
-    if (spamPatterns.some(pattern => pattern.test(notes))) {
-      return new Response(
-        JSON.stringify({
-          error: 'Invalid content detected. Please ensure your input contains only meeting notes.'
-        }),
-        { status: 400 }
-      );
-    }
-
-    // Record start time
-    const startTime = Date.now();
-
-    // Generate the summary
-    const result = await hf.summarization({
-      model: 'philschmid/bart-large-cnn-samsum',
-      inputs: notes,
-      parameters: {
-        max_length: 250,
-        min_length: 100,
-        temperature: 0.7,
-      },
-    });
-
-    // Calculate how long the operation took
-    const operationTime = Date.now() - startTime;
-
-    // If operation was faster than MIN_RESPONSE_TIME, wait for the remaining time
-    if (operationTime < MIN_RESPONSE_TIME) {
-      await new Promise(resolve => setTimeout(resolve, MIN_RESPONSE_TIME - operationTime));
+    // Calculate time spent and add delay if needed
+    const timeSpent = Date.now() - startTime;
+    if (timeSpent < MIN_RESPONSE_TIME) {
+      await new Promise(resolve => setTimeout(resolve, MIN_RESPONSE_TIME - timeSpent));
     }
 
     // Process and return the result
@@ -102,8 +65,16 @@ export async function POST(request: Request) {
       JSON.stringify(structuredSummary),
       { status: 200 }
     );
-  } catch (error) {
+  } catch (error: Error | unknown) {
     console.error('Summarization error:', error);
+    if (error instanceof Error && error.message === 'API timeout') {
+      return new Response(
+        JSON.stringify({
+          error: 'The summarization is taking longer than expected. Please try again.'
+        }),
+        { status: 504 }
+      );
+    }
     return new Response(
       JSON.stringify({ error: 'Failed to summarize text' }),
       { status: 500 }
